@@ -1,6 +1,6 @@
 # PAProxy 🚀
 
-![PAProxy Logo](logo.png)
+![PAProxy Logo](icon.png)
 
 MTProto Proxy Finder
 
