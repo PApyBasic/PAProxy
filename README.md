@@ -1,5 +1,8 @@
-# PApyBasic.github.io/PAProxy
-PAProxy-Free MTProto Telegram Proxy
-Free Proxy:PApyBasic.github.io/PAProxy
+# PAProxy 🚀
+
+MTProto Proxy Finder
+
+🌐 Website:
+[Open PAProxy](https://papybasic.github.io/PAProxy)
 
 Made with ❤️ For IRAN
