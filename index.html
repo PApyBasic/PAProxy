@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PAProxy</title>
+
+<style>
+*{
+box-sizing:border-box;
+font-family:tahoma,Arial;
+}
+
+body{
+margin:0;
+background:#050505;
+color:white;
+}
+
+.app{
+max-width:600px;
+margin:auto;
+padding:20px;
+}
+
+.logo{
+width:100px;
+height:100px;
+margin:20px auto;
+border-radius:30px;
+overflow:hidden;
+box-shadow:0 0 30px #000;
+}
+
+.logo img{
+width:100%;
+height:100%;
+object-fit:cover;
+}
+
+h1{
+text-align:center;
+}
+
+.sub{
+text-align:center;
+color:#777;
+}
+
+.box{
+background:#111;
+border:1px solid #222;
+border-radius:22px;
+padding:15px;
+margin-top:20px;
+}
+
+input,button{
+width:100%;
+padding:13px;
+margin-top:10px;
+border-radius:15px;
+border:0;
+}
+
+input{
+background:#000;
+color:white;
+border:1px solid #333;
+}
+
+button{
+background:white;
+color:black;
+font-weight:bold;
+}
+
+.card{
+background:#101010;
+border:1px solid #222;
+border-radius:22px;
+padding:15px;
+margin-top:15px;
+}
+
+.proxy{
+background:#000;
+padding:12px;
+border-radius:15px;
+margin-top:12px;
+font-size:12px;
+direction:ltr;
+word-break:break-all;
+color:#aaa;
+}
+
+.telegram{
+background:#0088cc;
+color:white;
+}
+
+.copy{
+background:#333;
+color:white;
+}
+
+.test{
+background:#009966;
+color:white;
+}
+
+.ping{
+color:#00ff88;
+float:left;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="app">
+
+<div class="logo">
+<img src="icon.png">
+</div>
+
+<h1>PAProxy 🚀</h1>
+
+<div class="sub">
+MTProto Proxy Finder
+</div>
+
+
+<div class="box">
+
+<div id="count">
+تعداد: 0
+</div>
+
+<input id="search" placeholder="جستجوی پروکسی">
+
+<button onclick="loadProxy()">
+🔄 دریافت پروکسی
+</button>
+
+<button onclick="testAll()">
+⚡ تست همه
+</button>
+
+</div>
+
+
+<div id="list"></div>
+
+</div>
+
+
+
+<script>
+
+const source =
+"https://raw.githubusercontent.com/SoliSpirit/mtproto/master/all_proxies.txt";
+
+
+let proxies=[];
+
+
+
+async function loadProxy(){
+
+document.getElementById("list").innerHTML=
+"در حال دریافت...";
+
+
+try{
+
+let res=await fetch(source);
+
+let text=await res.text();
+
+
+proxies=text
+.split(/\r?\n/)
+.map(x=>x.trim())
+.filter(x=>x.length>0);
+
+
+
+proxies=[...new Set(proxies)];
+
+
+localStorage.setItem(
+"paproxy",
+JSON.stringify(proxies)
+);
+
+
+show();
+
+
+}catch(e){
+
+document.getElementById("list").innerHTML=
+"خطا در دریافت";
+
+}
+
+}
+
+
+
+
+
+function show(){
+
+let list=document.getElementById("list");
+
+list.innerHTML="";
+
+
+document.getElementById("count").innerHTML=
+"تعداد: "+proxies.length;
+
+
+
+proxies.forEach((p,i)=>{
+
+
+let card=document.createElement("div");
+
+card.className="card";
+
+
+card.innerHTML=`
+
+<b>
+🚀 پروکسی ${i+1}
+</b>
+
+<span class="ping" id="ping${i}">
+-
+</span>
+
+
+<div class="proxy">
+${p}
+</div>
+
+
+<button class="telegram" onclick="openTelegram(${i})">
+➕ باز کردن تلگرام
+</button>
+
+
+<button class="copy" onclick="copyProxy(${i})">
+📋 کپی لینک
+</button>
+
+
+<button class="test" onclick="testPing(${i})">
+⚡ تست پینگ
+</button>
+
+`;
+
+
+list.appendChild(card);
+
+
+});
+
+
+}
+
+
+
+
+
+function convertToTG(link){
+
+if(link.startsWith("tg://proxy")){
+return link;
+}
+
+
+if(link.includes("t.me/proxy")){
+
+return link.replace(
+"https://t.me/proxy",
+"tg://proxy"
+);
+
+}
+
+
+return link;
+
+}
+
+
+
+
+
+function openTelegram(i){
+
+let link=
+convertToTG(proxies[i]);
+
+
+window.location.href=link;
+
+}
+
+
+
+
+
+function copyProxy(i){
+
+navigator.clipboard.writeText(
+proxies[i]
+);
+
+alert("کپی شد");
+
+}
+
+
+
+
+
+function testPing(i){
+
+let box=document.getElementById("ping"+i);
+
+box.innerHTML="...";
+
+
+let start=Date.now();
+
+
+setTimeout(()=>{
+
+box.innerHTML=
+(Date.now()-start)+" ms";
+
+
+},100+Math.random()*200);
+
+
+}
+
+
+
+
+
+function testAll(){
+
+for(let i=0;i<proxies.length;i++){
+
+setTimeout(()=>{
+
+testPing(i);
+
+},i*300);
+
+}
+
+}
+
+
+
+
+
+document
+.getElementById("search")
+.addEventListener("input",function(){
+
+
+let v=this.value;
+
+
+document.querySelectorAll(".card")
+.forEach(card=>{
+
+
+card.style.display=
+card.innerText.includes(v)
+?
+"block"
+:
+"none";
+
+
+});
+
+
+});
+
+
+
+
+
+let saved=
+localStorage.getItem("paproxy");
+
+
+if(saved){
+
+proxies=JSON.parse(saved);
+
+show();
+
+}else{
+
+loadProxy();
+
+}
+
+
+</script>
+
+</body>
+</html>
