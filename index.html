@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>PAProxy 🚀</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap" rel="stylesheet">
+
+
+<style>
+
+*{
+box-sizing:border-box;
+font-family:"Vazirmatn",Tahoma,Arial;
+}
+
+
+body{
+
+margin:0;
+background:#050505;
+color:white;
+
+}
+
+
+
+.app{
+
+max-width:650px;
+margin:auto;
+padding:20px;
+
+}
+
+
+
+.made{
+
+position:fixed;
+top:15px;
+left:15px;
+background:#111;
+border:1px solid #333;
+padding:10px 18px;
+border-radius:50px;
+font-size:14px;
+color:#ddd;
+z-index:99;
+
+}
+
+
+.made span{
+
+color:#ff2d55;
+font-size:17px;
+
+}
+
+
+
+
+.logo{
+
+width:100px;
+height:100px;
+margin:50px auto 15px;
+border-radius:25px;
+overflow:hidden;
+
+}
+
+
+
+.logo img{
+
+width:100%;
+height:100%;
+object-fit:cover;
+
+}
+
+
+
+h1{
+
+text-align:center;
+margin:10px;
+
+}
+
+
+
+.sub{
+
+text-align:center;
+color:#777;
+
+}
+
+
+
+.box{
+
+background:#111;
+border:1px solid #222;
+border-radius:25px;
+padding:15px;
+margin-top:20px;
+
+}
+
+
+
+.status{
+
+background:#111;
+border:1px solid #333;
+border-radius:20px;
+padding:15px;
+margin-top:20px;
+line-height:2;
+color:#bbb;
+
+}
+
+
+
+
+input,button{
+
+width:100%;
+padding:13px;
+margin-top:10px;
+border-radius:15px;
+border:0;
+
+}
+
+
+
+input{
+
+background:#000;
+color:white;
+border:1px solid #333;
+
+}
+
+
+
+button{
+
+font-weight:bold;
+cursor:pointer;
+
+}
+
+
+
+.telegram{
+
+background:#0088cc;
+color:white;
+
+}
+
+
+
+.copy{
+
+background:#333;
+color:white;
+
+}
+
+
+
+.card{
+
+background:#101010;
+border:1px solid #222;
+border-radius:22px;
+padding:15px;
+margin-top:15px;
+
+}
+
+
+
+.proxy{
+
+background:#000;
+border-radius:15px;
+padding:12px;
+margin-top:10px;
+font-size:12px;
+direction:ltr;
+word-break:break-all;
+color:#aaa;
+
+}
+
+
+
+.warning{
+
+color:#ff4444;
+font-weight:bold;
+
+}
+
+
+</style>
+
+
+</head>
+
+
+
+<body>
+
+
+<div class="made">
+
+ساخته شده با <span>❤️</span> برای ایران
+
+</div>
+
+
+
+<div class="app">
+
+
+<div class="logo">
+
+<img src="icon.png">
+
+</div>
+
+
+
+<h1>
+
+PAProxy 🚀
+
+</h1>
+
+
+
+<div class="sub">
+
+MTProto Proxy Finder
+
+</div>
+
+
+
+<div class="status" id="userInfo">
+
+در حال بررسی اتصال...
+
+</div>
+
+
+
+<div class="status" id="status">
+
+آماده دریافت پروکسی✅️
+
+</div>
+
+
+
+<div class="box">
+
+
+<div id="count">
+
+تعداد: 0
+
+</div>
+
+
+
+<input id="search" placeholder="جستجوی پروکسی">
+
+
+
+<button onclick="loadProxy()">
+
+🔄 دریافت پروکسی‌ها
+
+</button>
+
+
+</div>
+
+
+
+<div id="suggestions"></div>
+
+
+<div id="list"></div>
+
+
+
+<script>
+
+
+const sources = [
+
+"https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/TELEGRAM_PROXY_SUB/refs/heads/main/telegram_proxy_no1.txt",
+
+"https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/TELEGRAM_PROXY_SUB/refs/heads/main/telegram_proxy_no2.txt",
+
+"https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/TELEGRAM_PROXY_SUB/refs/heads/main/telegram_proxy_no3.txt",
+
+"https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/TELEGRAM_PROXY_SUB/refs/heads/main/telegram_proxy_no4.txt",
+
+"https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/TELEGRAM_PROXY_SUB/refs/heads/main/telegram_proxy_no5.txt",
+
+"https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/TELEGRAM_PROXY_SUB/refs/heads/main/telegram_proxy_no6.txt",
+
+"https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/TELEGRAM_PROXY_SUB/refs/heads/main/telegram_proxy_no7.txt",
+
+"https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/TELEGRAM_PROXY_SUB/refs/heads/main/telegram_proxy_no8.txt",
+
+"https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/TELEGRAM_PROXY_SUB/refs/heads/main/telegram_proxy_no9.txt",
+
+"https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/TELEGRAM_PROXY_SUB/refs/heads/main/telegram_proxy_no10.txt"
+
+];
+
+
+
+let proxies=[];
+
+async function loadProxy(){
+
+
+let status =
+document.getElementById("status");
+
+
+status.innerHTML =
+"⏳ شروع دریافت پروکسی از منابع...";
+
+
+let all=[];
+
+
+
+for(let i=0;i<sources.length;i++){
+
+
+try{
+
+
+status.innerHTML +=
+`<br>⏳ دریافت منبع ${i+1}...`;
+
+
+
+let res =
+await fetch(sources[i]);
+
+
+
+let text =
+await res.text();
+
+
+
+let list =
+text
+.split(/\r?\n/)
+.map(x=>x.trim())
+.filter(Boolean);
+
+
+
+all.push(...list);
+
+
+
+status.innerHTML +=
+`<br>✅ منبع ${i+1}: ${list.length} پروکسی`;
+
+
+
+}
+
+catch(e){
+
+
+status.innerHTML +=
+`<br>❌ منبع ${i+1} در دسترس نیست`;
+
+}
+
+
+}
+
+
+
+
+// حذف تکراری‌ها
+
+proxies =
+[...new Set(all)];
+
+
+
+
+// فقط پروکسی معتبر
+
+proxies =
+proxies.filter(p=>
+
+
+p.includes("proxy") ||
+p.includes("tg://")
+
+
+);
+
+
+
+
+
+localStorage.setItem(
+
+"paproxy",
+
+JSON.stringify(proxies)
+
+);
+
+
+
+
+
+status.innerHTML +=
+
+`<br><br>🎉 تعداد نهایی: ${proxies.length}`;
+
+
+
+
+
+show();
+
+
+showSuggestions();
+
+
+}
+
+
+
+
+function show(){
+
+
+let list =
+document.getElementById("list");
+
+
+
+list.innerHTML="";
+
+
+
+document.getElementById("count").innerHTML =
+
+"تعداد: "+proxies.length;
+
+
+
+
+
+proxies.forEach((p,i)=>{
+
+
+let card =
+document.createElement("div");
+
+
+
+card.className="card";
+
+
+
+card.innerHTML =
+
+`
+
+<b>
+
+🚀 پروکسی ${i+1}
+
+</b>
+
+
+
+<div class="proxy">
+
+${p}
+
+</div>
+
+
+
+<button class="telegram"
+
+onclick="openTelegram(${i})">
+
+➕ اضافه کردن به تلگرام
+
+</button>
+
+
+
+<button class="copy"
+
+onclick="copyProxy(${i})">
+
+📋 کپی
+
+</button>
+
+
+`;
+
+
+
+list.appendChild(card);
+
+
+
+});
+
+
+}
+
+
+
+
+
+function showSuggestions(){
+
+
+if(proxies.length<5)
+
+return;
+
+
+
+let random =
+
+[...proxies]
+
+.sort(()=>Math.random()-0.5)
+
+.slice(0,5);
+
+
+
+
+document.getElementById("suggestions").innerHTML =
+
+
+`
+
+<div class="box">
+
+<b>
+
+⭐ پروکسی‌های پیشنهادی
+
+</b>
+
+
+
+${random.map(p=>{
+
+
+let i =
+proxies.indexOf(p);
+
+
+
+return `
+
+
+<div class="card">
+
+
+<div class="proxy">
+
+${p}
+
+</div>
+
+
+
+<button class="telegram"
+
+onclick="openTelegram(${i})">
+
+➕ تلگرام
+
+</button>
+
+
+</div>
+
+
+`;
+
+
+}).join("")}
+
+
+
+</div>
+
+`;
+
+
+
+}
+
+function convertToTG(link){
+
+
+if(link.startsWith("tg://proxy")){
+
+
+return link;
+
+
+}
+
+
+
+if(link.includes("t.me/proxy")){
+
+
+return link.replace(
+
+"https://t.me/proxy",
+
+"tg://proxy"
+
+);
+
+
+}
+
+
+
+return link;
+
+
+}
+
+
+
+
+
+function openTelegram(i){
+
+
+let link =
+
+convertToTG(proxies[i]);
+
+
+
+window.location.href = link;
+
+
+}
+
+
+
+
+
+
+function copyProxy(i){
+
+
+navigator.clipboard.writeText(
+
+proxies[i]
+
+);
+
+
+
+alert("✅ پروکسی کپی شد");
+
+
+}
+
+
+
+
+
+
+
+document
+
+.getElementById("search")
+
+.addEventListener("input",function(){
+
+
+
+let value =
+
+this.value.toLowerCase();
+
+
+
+
+document
+
+.querySelectorAll(".card")
+
+.forEach(card=>{
+
+
+
+if(card.innerText
+
+.toLowerCase()
+
+.includes(value)){
+
+
+
+card.style.display="block";
+
+
+}
+
+else{
+
+
+card.style.display="none";
+
+
+}
+
+
+});
+
+
+
+});
+
+
+
+
+
+
+async function checkUser(){
+
+
+let box =
+
+document.getElementById("userInfo");
+
+
+
+try{
+
+
+
+let res =
+
+await fetch(
+
+"https://geolocation-db.com/json/"
+
+);
+
+
+
+let data =
+
+await res.json();
+
+
+
+let html =
+
+
+
+`
+
+🌐 IP شما:
+
+<br>
+
+${data.IPv4}
+
+
+<br><br>
+
+
+🌍 کشور:
+
+<br>
+
+${data.country_name}
+
+
+`;
+
+
+
+
+
+if(data.country_name=="Azerbaijan"){
+
+
+
+html +=
+
+
+`
+
+<div class="box">
+
+
+برخی کاربران ایرانی توسط بعضی سرویس‌ها به‌عنوان آذربایجان شناسایی می‌شوند.
+
+</div>
+
+`;
+
+
+
+}
+
+
+
+
+if(
+
+data.country_name!="Iran" &&
+
+data.country_name!="Azerbaijan"
+
+){
+
+
+
+html +=
+
+
+`
+
+<div class="warning">
+
+⚠️ احتمالاً فیلترشکن روشن است
+
+</div>
+
+`;
+
+
+
+}
+
+
+
+
+box.innerHTML = html;
+
+
+
+}
+
+catch(e){
+
+
+box.innerHTML =
+
+"❌ دریافت اطلاعات اتصال ناموفق بود";
+
+
+}
+
+
+
+}
+
+
+
+
+
+
+
+let saved =
+
+localStorage.getItem("paproxy");
+
+
+
+
+
+if(saved){
+
+
+
+proxies =
+
+JSON.parse(saved);
+
+
+
+show();
+
+showSuggestions();
+
+
+
+}
+
+else{
+
+
+loadProxy();
+
+
+
+}
+
+
+
+
+checkUser();
+
+
+
+</script>
+
+
+</body>
+
+
+</html>
+
