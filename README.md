@@ -1,5 +1,7 @@
 # PAProxy 🚀
 
+![PAProxy Logo](images/logo.png)
+
 MTProto Proxy Finder
 
 🌐 Website:
