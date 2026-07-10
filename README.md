@@ -1,4 +1,4 @@
-# PAProxy 🚀
+# PAProxy V2 🚀
 
 ![PAProxy Logo](icon.png)
 
